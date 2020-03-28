@@ -1,0 +1,6 @@
+html,body,div,ul,li,ol,h1,h2,h3,h4,h5,p,side,header,footer,main,table,tr,td,th,tbody,thead,input,textarea,button{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: 0;
+}
