@@ -19,9 +19,21 @@
               <el-input v-model="ruleForm.passowrd" placeholder="请输入密码"></el-input>
             </el-form-item>
           </el-col>
+   
           <el-col :span="18" :offset="2">
             <el-form-item>
-              <el-button style="width:100%;" :loading="loading" type="primary" @click="submitForm('ruleForm')">登 录</el-button>
+              <el-popover
+                v-if="failCount>=3 "
+                placement="top"
+                v-model="imgDisplay"
+                width="400"
+                trigger="click">
+               <SliderCheck v-if="imgData" :imgData="imgData" @change="onSlide" :height="252" :width="400" />
+              <el-button slot="reference" style="width:100%;" :disabled="imgDisplay"  type="primary" @click="submitForm('ruleForm')">登 录1</el-button>
+
+              </el-popover>
+
+              <el-button v-else style="width:100%;" :loading="loading" type="primary" @click="submitForm('ruleForm')">登 录</el-button>
             </el-form-item>
           </el-col>
         </el-form>
@@ -35,15 +47,16 @@
 <script>
 import http from "@/utils/http.utils";
 import SliderCheck from "@/components/SliderCheck";
-import {LOGIN_FAILE_KEY} from '@/utils/constant';
+import { LOGIN_FAILE_KEY } from "@/utils/constant";
 export default {
   components: {
     SliderCheck
   },
   data() {
     return {
-      imgData: {},
-      loading:false,
+      imgDisplay: false,
+      imgData: null,
+      loading: false,
       ruleForm: {
         username: "",
         password: ""
@@ -53,7 +66,8 @@ export default {
           { required: true, message: "请输入用户名或手机号", trigger: "blur" }
         ],
         passowrd: [{ required: true, message: "请输入密码", trigger: "blur" }]
-      }
+      },
+      failCount: 0
     };
   },
   mounted() {
@@ -61,20 +75,66 @@ export default {
     //   console.log(res);
     //   this.imgData = res.data;
     // });
-
-
+    // http.get("/api/code").then(res => {
+    //   console.log(res, "code");
+    //   // this.imgData = res.data;
+    // });
+    this.failCount = Number(localStorage.getItem(LOGIN_FAILE_KEY) || "0") || 0;
   },
   methods: {
     onSlide(e) {
       console.log(e, "滑动");
+      this.doCheck(e);
+    },
+    doCheck(x) {
+      http.post("/login/checkSlider", {distance: x.toFixed("1") }).then(res => {
+        console.log(res, "验证结果");
+        if(res.code == 0){
+          this.doSubmit('1','2');
+        }else{
+            this.getCode();
+        }
+      }).catch(err=>{
+          this.getCode();
+      })
     },
     submitForm() {
       this.$refs["ruleForm"].validate(valid => {
-        console.log(valid,'valid')
-        if(valid){
-          http.get('/')
+        console.log(valid, "valid");
+        if (valid) {
+          if(this.failCount >= 3){
+            this.getCode()
+          }else{
+            this.doSubmit("1", "2", "3");
+          }
         }
       });
+    },
+    getCode() {
+      http.get("/login/getCode").then(res => {
+        console.log(res,'vvvv')
+        this.imgData = res.data;
+      });
+    },
+    doSubmit(password, username) {
+      http
+        .get("/login/signIn", {
+          password,
+          username
+        })
+        .then(res => {
+          this.failCount += 1;
+          this.imgDisplay =false;
+          if(this.code == 0){
+
+          }else{
+            
+          }
+        })
+        .catch(err => {
+          this.failCount += 1;
+          this.imgDisplay =false;
+        });
     }
   }
 };
@@ -103,7 +163,7 @@ export default {
   .login-box {
     width: 360px;
     padding: 32px;
-    height: 450px;
+    min-height: 450px;
     background: #ffffff;
     border-radius: 5px;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);

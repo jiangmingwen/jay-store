@@ -6,10 +6,7 @@ import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.httpclient.HTTPException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.jaymw.JStore.config.SmsConfig;
 import site.jaymw.JStore.domain.ApiResult;
 import site.jaymw.JStore.domain.SliderCheck;
@@ -37,6 +34,26 @@ public class TestController {
 //        System.out.println(result);
 //        return result;
         return null;
+    }
+
+    @GetMapping("/code")
+    public Object code(HttpServletRequest request) {
+        SliderCheck build = SliderCheckUtils.build();
+        request.getSession().setAttribute("slider-X-index", build.getPuzzleXAxis());
+        build.setPuzzleXAxis("");
+        build.setSourceImg("");
+        return ApiResult.buildSuccess(build, "图片验证加载成功");
+    }
+
+    @GetMapping("/login")
+    public Object login(
+            HttpServletRequest request,
+            @RequestParam(value = "username", required = true) String username,
+            @RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "x", required = true) String x
+    ) {
+        String index = (String) request.getSession().getAttribute("slider-X-index");
+        return ApiResult.buildSuccess(index);
     }
 
     @GetMapping("/get-slider-img")

@@ -6,7 +6,7 @@ import configProd from '@/config/config.prod.js';
 import { TOKEN_KEY } from '@/utils/constant.js';
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV);
 
-
+axios.defaults.withCredentials=true;
 
 Vue.prototype.$progressInstance = 0;
 
@@ -51,6 +51,7 @@ const request = (method, api, params, data, options) => {
         Authorization: localStorage.getItem(TOKEN_KEY) || ''
     }
     return new Promise(resolve => {
+        console.log(options,'options')
         axios({
             url,
             method,

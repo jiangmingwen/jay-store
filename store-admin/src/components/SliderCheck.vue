@@ -57,6 +57,7 @@ export default {
           this.top = this.imgData.puzzleYAxis / this.yRelation;
           this.puzzleWidth = this.imgData.puzzleWidth / this.xRelation;
           this.puzzHeight = this.imgData.puzzleHeight / this.yRelation;
+          this.left = 0;
         }
       },
       immediate: true
@@ -81,6 +82,7 @@ $--slider-height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: $--slider-height;
   .img-box {
     position: relative;
     .puzzle-img {
