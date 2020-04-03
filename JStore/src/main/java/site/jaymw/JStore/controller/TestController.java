@@ -26,14 +26,13 @@ public class TestController {
     private SmsConfig smsConfig;
 
     @RequestMapping("/send")
-    public Object send() {
-//        SmsSingleSender sender = new SmsSingleSender(smsConfig.getAppid(), smsConfig.getAppkey());
-//        String[] params = {CommonUtils.createRandom(true, 6), "5"};
-//        SmsSingleSenderResult result = sender.sendWithParam("86", "18780159585",
-//                smsConfig.getRegisterId(), params, smsConfig.getSign(), "", "");
-//        System.out.println(result);
-//        return result;
-        return null;
+    public Object send(@RequestParam(value = "phone", required = true) String phone) throws HTTPException, IOException {
+        SmsSingleSender sender = new SmsSingleSender(smsConfig.getAppid(), smsConfig.getAppkey());
+        String[] params = {CommonUtils.createRandom(true, 6), "5"};
+        SmsSingleSenderResult result = sender.sendWithParam("86", phone,
+                smsConfig.getRegisterId(), params, smsConfig.getSign(), "", "");
+        System.out.println(result);
+        return result;
     }
 
     @GetMapping("/code")

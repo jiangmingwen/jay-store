@@ -130,6 +130,12 @@
             <version>1.0.6</version>
         </dependency>
 
+        <!-- 邮件相关 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
