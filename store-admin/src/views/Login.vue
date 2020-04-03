@@ -9,37 +9,35 @@
       </div>
       <div class="login-form">
         <el-form :model="ruleForm" :rules="rules" label-position="top" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-col :span="18" :offset="2">
+        <el-col :span="18" :offset="3">
             <el-form-item label="用户名" prop="username">
               <el-input v-model="ruleForm.username" placeholder="请输入用户名或手机号"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="18" :offset="2">
+          <el-col :span="18" :offset="3">
             <el-form-item label="密码" prop="passowrd">
               <el-input v-model="ruleForm.passowrd" placeholder="请输入密码"></el-input>
             </el-form-item>
           </el-col>
    
-          <el-col :span="18" :offset="2">
+          <el-col :span="18" :offset="3">
             <el-form-item>
               <el-popover
-                v-if="failCount>=3 "
-                placement="top"
                 v-model="imgDisplay"
+                placement="top"
                 width="400"
                 trigger="click">
-               <SliderCheck v-if="imgData" :imgData="imgData" @change="onSlide" :height="252" :width="400" />
-              <el-button slot="reference" style="width:100%;" :disabled="imgDisplay"  type="primary" @click="submitForm('ruleForm')">登 录1</el-button>
-
+                <div style="height:282px;width:400px;">
+                  <SliderCheck v-if="imgData" :imgData="imgData" @change="onSlide" :height="252" :width="400" />
+                </div>
+                <el-button slot="reference" style="width:100%;" :loading="loading" :disabled="!ruleForm.username || !ruleForm.passowrd || imgDisplay"   type="primary" @click="submitForm('ruleForm')">登 录</el-button>
               </el-popover>
 
-              <el-button v-else style="width:100%;" :loading="loading" type="primary" @click="submitForm('ruleForm')">登 录</el-button>
             </el-form-item>
           </el-col>
         </el-form>
       </div>
     </div>
-   <!-- <SliderCheck :imgData="imgData" @change="onSlide" :height="120" :width="250" /> -->
   </div>
 
 </template>
@@ -67,74 +65,58 @@ export default {
         ],
         passowrd: [{ required: true, message: "请输入密码", trigger: "blur" }]
       },
-      failCount: 0
     };
   },
-  mounted() {
-    // http.get("/api/get-slider-img").then(res => {
-    //   console.log(res);
-    //   this.imgData = res.data;
-    // });
-    // http.get("/api/code").then(res => {
-    //   console.log(res, "code");
-    //   // this.imgData = res.data;
-    // });
-    this.failCount = Number(localStorage.getItem(LOGIN_FAILE_KEY) || "0") || 0;
-  },
+
   methods: {
     onSlide(e) {
-      console.log(e, "滑动");
       this.doCheck(e);
     },
     doCheck(x) {
-      http.post("/login/checkSlider", {distance: x.toFixed("1") }).then(res => {
-        console.log(res, "验证结果");
-        if(res.code == 0){
-          this.doSubmit('1','2');
-        }else{
+      http
+        .post("/login/checkSlider", { distance: x.toFixed("1") })
+        .then(res => {
+          if (res.code == 0) {
+            this.imgDisplay = false;
+            this.doSubmit("1", "2");
+          } else {
             this.getCode();
-        }
-      }).catch(err=>{
+          }
+        })
+        .catch(err => {
           this.getCode();
-      })
+        });
     },
     submitForm() {
       this.$refs["ruleForm"].validate(valid => {
-        console.log(valid, "valid");
         if (valid) {
-          if(this.failCount >= 3){
-            this.getCode()
-          }else{
-            this.doSubmit("1", "2", "3");
-          }
+          this.getCode();
         }
       });
     },
     getCode() {
       http.get("/login/getCode").then(res => {
-        console.log(res,'vvvv')
         this.imgData = res.data;
       });
     },
     doSubmit(password, username) {
+      this.loading = true;
       http
         .get("/login/signIn", {
           password,
           username
         })
         .then(res => {
-          this.failCount += 1;
-          this.imgDisplay =false;
-          if(this.code == 0){
+          if (res.code == 0) {
 
-          }else{
-            
+          } else {
+            this.$message.error(res.msg || "登录失败");
           }
+        }).catch(err=>{
+            this.$message.error( "登录失败");
+        }).finally(()=>{
+           this.loading = false;
         })
-        .catch(err => {
-          this.failCount += 1;
-          this.imgDisplay =false;
-        });
     }
   }
 };

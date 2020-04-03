@@ -1,5 +1,7 @@
 package site.jaymw.JStore.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import site.jaymw.JStore.domain.ApiResult;
 import site.jaymw.JStore.domain.SliderCheck;
@@ -11,7 +13,10 @@ import java.util.Map;
 @RequestMapping("/api/login")
 @RestController
 public class LoginController {
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
     public static final String SLIDER_X_KEY = "slider-X-index";
+    public static final String LOGIN_FAIL_COUNT = "login-fail_count";
 
     @GetMapping("/getCode")
     public Object code(HttpServletRequest request) {
@@ -38,6 +43,9 @@ public class LoginController {
             @RequestParam(value = "username", required = true) String username,
             @RequestParam(value = "password", required = true) String password
     ) {
+        if(true){//登录失败 次数+1，超高
+
+        }
         return ApiResult.buildError("失败");
     }
 

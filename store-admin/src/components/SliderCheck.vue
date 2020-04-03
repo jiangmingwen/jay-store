@@ -1,14 +1,18 @@
 <template>
     <div class="slider-check">
         <div class="img-box" :style="{width:width+'px',height:height+'px'}"  >
-            <img :style="{width:width+'px',height:height+'px'}" :src="imgData.modifyImg" alt="">
-            <img :style="{
+            <img :style="{width:width+'px',height:height+'px'}" :src="imgData.modifyImg" alt="" />
+            <div  :style="{
                 width:puzzleWidth+'px',
-                top: top+ 'px',
-                left:left+'px',
+                top: top-6+ 'px',
+                left:left-6+'px',
                 height:puzzHeight+'px',
-             }"
-              class="puzzle-img" :src="imgData.puzzleImg" alt="">
+                padding:'4px'
+             }" class="puzzle-img">
+              <img style="width:100%;height:100%"
+               :src="imgData.puzzleImg" alt="" />
+            </div>
+           
             <el-slider v-model="left" @change="onSlide" :max="width-puzzleWidth" :show-tooltip="false" />
         </div>
     </div>
@@ -39,7 +43,7 @@ export default {
   },
   data() {
     return {
-      left: 0,
+      left: 4,
       xRelation: 1,
       yRelation: 1,
       top: 0,
@@ -57,14 +61,14 @@ export default {
           this.top = this.imgData.puzzleYAxis / this.yRelation;
           this.puzzleWidth = this.imgData.puzzleWidth / this.xRelation;
           this.puzzHeight = this.imgData.puzzleHeight / this.yRelation;
-          this.left = 0;
+          this.left = 6;
         }
       },
       immediate: true
     },
     value: {
       handler(v) {
-        this.left = v / this.xRelation;
+        this.left = v / this.xRelation || 6;
       },
       immediate: true
     }
@@ -87,6 +91,8 @@ $--slider-height: 30px;
     position: relative;
     .puzzle-img {
       position: absolute;
+      border: 2px solid #000;
+      border-radius: 5px;
     }
   }
   /deep/ .el-slider {

@@ -40,12 +40,12 @@ public class SliderCheckUtils {
 
     public static SliderCheck build() {
         try {
-            int max = 480;
+            int max = 430;
             int min = 150;
             int x = new Random().nextInt(max - min) + min;
             // 生成base64
             int[][] blockData = getBlockData();
-            int number = new Random().nextInt(7) + 1;
+            int number = new Random().nextInt(6) + 1;
             BufferedImage resourceImg = ImageIO.read(new File("H:\\toux\\v2\\" + number + ".jpg"));
             String resourceImgSt = getImageBASE64(resourceImg);
             BufferedImage puzzleImg = new BufferedImage(targetLength, targetWidth, BufferedImage.TYPE_4BYTE_ABGR);
